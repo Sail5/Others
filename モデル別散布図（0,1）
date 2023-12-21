@@ -1,0 +1,64 @@
+import matplotlib.pyplot as plt
+
+＃このデータは例
+data = {
+    'Model A - Validation 1': list('100101100000000'),
+    'Model A - Validation 2': list('100111000100000'),
+    'Model A - Validation 6': list('100000000000000'),
+    'Model B - Validation 1': list('111101000000000'),
+    'Model B - Validation 2': list('111100001100101'),
+    'Model B - Validation 3': list('111110001000000'),
+    'Model C - Validation 1': list('000000100001100'),
+    'Model C - Validation 2': list('000010000011001'),
+    'Model C - Validation 3': list('110000000010000'),
+}
+
+# プロット用のデータを初期化
+plot_data = {'Model A': [], 'Model B': [], 'Model C': []}
+
+# データを走査してプロットデータを収集
+for model_key, values in data.items():
+    model, validation = model_key.split(' - ')
+    x = list(range(1, 16))
+    y = [i + 1 for i, v in enumerate(values) if v == '1']
+    plot_data[model].extend([(model, validation, xi, yi) for xi, yi in zip(x, y)])
+
+# グラフの作成
+fig, ax = plt.subplots()
+# プロットデータを用いてサイズを変更した円を作成
+existing_points = {'Model A': set(), 'Model B': set(), 'Model C': set()}
+
+def get_scaled_size(x, y, model, size, factor=1.5):
+    # 既存の座標に対してサイズを大きくする
+    if (x, y) in existing_points[model]:
+        return size * factor
+    else:
+        return size
+
+# プロットデータを用いてサイズを変更した円を作成
+for model, validation, x, y in plot_data['Model A']:
+    size = get_scaled_size(x, y, 'Model A', 50 + 5 * len(existing_points['Model A']))
+    ax.scatter(2, y, s=size, marker='o', label=f'{model} - {validation}', color='red', alpha=0.2)
+    existing_points['Model A'].add((x, y))
+
+for model, validation, x, y in plot_data['Model B']:
+    size = get_scaled_size(x, y, 'Model B', 50 + 5 * len(existing_points['Model B']))
+    ax.scatter(4, y, s=size, marker='o', label=f'{model} - {validation}', color='red', alpha=0.2)
+    existing_points['Model B'].add((x, y))
+
+for model, validation, x, y in plot_data['Model C']:
+    size = get_scaled_size(x, y, 'Model C', 50 + 5 * len(existing_points['Model C']))
+    ax.scatter(6, y, s=size, marker='o', label=f'{model} - {validation}', color='red', alpha=0.2)
+    existing_points['Model C'].add((x, y))
+
+# グラフの設定
+ax.set_xlabel('モデル')
+ax.set_ylabel('リスト要素')
+ax.set_xticks([2, 4, 6])
+ax.set_xticklabels(['Model A', 'Model B', 'Model C'])
+ax.set_ylim(0, 16)
+ax.invert_yaxis()  # y軸を上が1になるように反転
+
+
+# グラフの表示
+plt.show()
